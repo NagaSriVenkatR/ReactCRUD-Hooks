@@ -1,0 +1,32 @@
+.parent{
+  margin-top: 20px;
+  background-image: linear-gradient(to bottom,#902790,#6A2C91) !important;
+  border-radius: 15px;
+}
+.tech{
+  margin-top: 15%;
+}
+.btn-primary{
+  background-color: white !important;
+  color: #902790 !important;
+}
+p{
+  font-size: 12px;
+}
+.form-control{
+  height: 30px ;
+}
+.form{
+  background-image: linear-gradient(to bottom,#AB5DAB,#8E62AD) !important;
+  border-radius: 15px;
+}
+.register{
+  border-radius: 20px;
+}
+span{
+  font-size: 12px !important;
+  height: 14px !important;
+  /* position: absolute !important; */
+  display: block !important;
+  color: red;
+}
