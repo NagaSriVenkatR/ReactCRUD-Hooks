@@ -1,22 +1,21 @@
-
+import {BrowserRouter as Router, Routes, Route,Navigate } from 'react-router-dom';
 import './App.css';
 import Form from './Components/Form';
-// import { UserProvider } from './Components/Usercontext';
-// import UserForm from './Components/Userform';
-// import UserList from './Components/Userlist';
+import { FormProvider } from './Components/FormProvider';
+import FormTable from './Components/FormaTable';
+
 
 function App() {
   return (
-    // <UserProvider>
-    //   <div>
-    //     <h1>CRUD Operations with Use Context , Use Ref ,Use Reducer</h1>
-    //     <UserForm />
-    //     <UserList />
-    //   </div>
-    // </UserProvider>
-    <div>
-      <Form />
-    </div>
+    <Router>
+      <FormProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/form" />} />
+          <Route path="/form" element={<Form />} />
+          <Route path="/table" element={<FormTable />} />
+        </Routes>
+      </FormProvider>
+    </Router>
   );
 }
 

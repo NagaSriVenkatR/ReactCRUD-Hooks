@@ -1,18 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Form.css';
 import Tech from './image.png';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook} from 'react-icons/fa';
 import { FaSquareXTwitter } from 'react-icons/fa6';
+import FormContext from './FormProvider';
+import { useNavigate } from 'react-router-dom';
 function Form() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const { formData, dispatch } = useContext(FormContext);
   const [errors, setErrors] = useState({
     fullName: "",
     phoneNumber: "",
@@ -32,9 +28,14 @@ function Form() {
     }
     setErrors(validateErrors);
   };
+   const fullNameRef = useRef(null);
+   const phoneNumberRef = useRef(null);
+   const emailRef = useRef(null);
+   const passwordRef = useRef(null);
+   const confirmPasswordRef = useRef(null);
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+    dispatch({ type: "UPDATE_FIELD", field: name, value });
   };
   let phoneNumberPattern = /^([0-9]{10})$/
   let emailPattern =
@@ -111,21 +112,16 @@ function Form() {
     setErrors(newErrors);
     return valid;
   };
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted successfully")
+      console.log("Form submitted successfully" , formData);
+      navigate("/table");
     }
   }
     const handleReset = () => {
-      setFormData({
-        fullName: "",
-        phoneNumber: "",
-        email: "",
-        userName: "",
-        password: "",
-        confirmPassword: "",
-      });
+      dispatch({ type: "RESET" });
       setErrors({
         fullName: "",
         phoneNumber: "",
@@ -191,6 +187,7 @@ function Form() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.fullName}
+                    ref={fullNameRef}
                   />
                   <span>{errors.fullName}</span>
                 </div>
@@ -205,6 +202,7 @@ function Form() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.phoneNumber}
+                    ref={phoneNumberRef}
                   />
                   <span>{errors.phoneNumber}</span>
                 </div>
@@ -219,6 +217,7 @@ function Form() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.email}
+                    ref={emailRef}
                   />
                   <span>{errors.email}</span>
                 </div>
@@ -233,6 +232,7 @@ function Form() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.password}
+                    ref={passwordRef}
                   />
                   <span>{errors.password}</span>
                 </div>
@@ -247,6 +247,7 @@ function Form() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.confirmPassword}
+                    ref={confirmPasswordRef}
                   />
                   <span>{errors.confirmPassword}</span>
                 </div>
@@ -256,9 +257,9 @@ function Form() {
                     I agree terms of Service and Privacy Policy
                   </label>
                 </div>
-                <div className="mt-3 text-center">
+                <div className="mt-3 text-center d-flex justify-content-evenly">
                   <button
-                    className="btn btn-primary register px-4 py-2 me-3"
+                    className="btn btn-primary register px-4 py-2"
                     type="submit"
                   >
                     Register
