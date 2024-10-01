@@ -6,17 +6,36 @@ import { FaUserEdit } from "react-icons/fa";
 import { TiUserDelete } from "react-icons/ti";
 
 function FormTable() {
-  const { formData } = useContext(FormContext); // Retrieve the form data
-  const [data, setData] = useState([formData]); // Store data in local state for CRUD operations
+  const { formData,dispatch } = useContext(FormContext); // Retrieve the form data
+  const [data, setData] = useState([]); // Store data in local state for CRUD operations
   const navigate = useNavigate();
   const handleUpdate = (email) => {
-    const rowData = data[email];
+    const rowData = data.find((item) => item.email === email);
     navigate("/form", { state: { formData: rowData } }); 
   };
+  const isFormDataValid = (data) => {
+    return (
+      data && data.fullName && data.phoneNumber && data.email && data.password
+    );
+  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
-    if (Object.keys(formData).length > 0) {
-      setData((prevData) => [...prevData, formData]);
+    console.log("Form Data:", formData);
+    console.log("Current Data:", data);
+    if (isFormDataValid(formData) && !isSubmitting) {
+      const exists = data.some((item) => item.email === formData.email);
+      console.log("Does email exist? ", exists);
+      if (!exists) {
+        setData((prevData) => [...prevData, formData]);
+        dispatch({ type: "RESET" });
+        setIsSubmitting(true);
+      } else {
+        console.log("Duplicate entry detected for email: ", formData.email);
+      }
+    } else if (isSubmitting) {
+      setIsSubmitting(false); // Reset flag if form is not valid
     }
+
   }, [formData]);
   const handleDelete = (index) => {
     const newData = data.filter((_, i) => i !== index);
@@ -50,7 +69,7 @@ function FormTable() {
                     <td>{row.password}</td>
                     <td>
                       <FaUserEdit
-                        onClick={() => handleUpdate(data.email)}
+                        onClick={() => handleUpdate(row.email)}
                         style={{ color: "green", cursor: "pointer" }}
                       />
                       <TiUserDelete

@@ -116,8 +116,11 @@ function Form() {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted successfully" , formData);
+      console.log("Form submitted successfully", formData);
       navigate("/table");
+      dispatch({ type: "SUBMIT", payload: formData });
+    } else {
+      console.log("Duplicate entry detected for email:", formData.email);
     }
   }
     const handleReset = () => {
