@@ -112,13 +112,16 @@ function Form() {
     setErrors(newErrors);
     return valid;
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
       console.log("Form submitted successfully", formData);
+      setIsSubmitting(true);
       navigate("/table");
       dispatch({ type: "SUBMIT", payload: formData });
+      setIsSubmitting(false);
     } else {
       console.log("Duplicate entry detected for email:", formData.email);
     }
@@ -186,7 +189,7 @@ function Form() {
                   <input
                     className="form-control"
                     type="text"
-                    name='fullName'
+                    name="fullName"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.fullName}
@@ -201,7 +204,7 @@ function Form() {
                   <input
                     className="form-control"
                     type="tel"
-                    name='phoneNumber'
+                    name="phoneNumber"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.phoneNumber}
@@ -216,7 +219,7 @@ function Form() {
                   <input
                     className="form-control"
                     type="email"
-                    name='email'
+                    name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.email}
@@ -231,7 +234,7 @@ function Form() {
                   <input
                     className="form-control"
                     type="password"
-                    name='password'
+                    name="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.password}
@@ -246,7 +249,7 @@ function Form() {
                   <input
                     className="form-control"
                     type="password"
-                    name='confirmPassword'
+                    name="confirmPassword"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={formData.confirmPassword}
@@ -264,10 +267,17 @@ function Form() {
                   <button
                     className="btn btn-primary register px-4 py-2"
                     type="submit"
+                    disabled={isSubmitting}
                   >
-                    Register
+                    {isSubmitting ? "Submitting..." : "Submit"}
                   </button>
-                  <button className='btn btn-primary register px-4 py-2' type='reset' onClick={handleReset}>Reset</button>
+                  <button
+                    className="btn btn-primary register px-4 py-2"
+                    type="reset"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
                 </div>
               </form>
             </div>

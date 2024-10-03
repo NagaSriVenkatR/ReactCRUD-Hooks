@@ -1,42 +1,43 @@
-// TablePage.js
 import React, { useContext, useEffect, useState } from "react";
 import FormContext from "./FormProvider";
 import { useNavigate } from "react-router-dom";
-import { FaUserEdit } from "react-icons/fa";
-import { TiUserDelete } from "react-icons/ti";
+import { debounce } from "lodash";
+import { MdDelete, MdModeEdit } from "react-icons/md";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 function FormTable() {
   const { formData,dispatch } = useContext(FormContext); // Retrieve the form data
   const [data, setData] = useState([]); // Store data in local state for CRUD operations
   const navigate = useNavigate();
-  const handleUpdate = (email) => {
-    const rowData = data.find((item) => item.email === email);
-    navigate("/form", { state: { formData: rowData } }); 
-  };
   const isFormDataValid = (data) => {
     return (
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    console.log("Form Data:", formData);
-    console.log("Current Data:", data);
-    if (isFormDataValid(formData) && !isSubmitting) {
-      const exists = data.some((item) => item.email === formData.email);
-      console.log("Does email exist? ", exists);
-      if (!exists) {
-        setData((prevData) => [...prevData, formData]);
-        dispatch({ type: "RESET" });
-        setIsSubmitting(true);
-      } else {
-        console.log("Duplicate entry detected for email: ", formData.email);
+  const [duplicateError, setDuplicateError] = useState("");
+  const emailExists = (email) => data.some((item) => item.email === email);
+  const handleFormSubmit = () => {
+     if (isFormDataValid(formData)) {
+      console.log(formData);
+       if (!emailExists(formData.email)) {
+         setData((prevData) => [...prevData, formData]);
+         dispatch({ type: "RESET" });
+         setDuplicateError("");
+       } 
+     }
+  }
+  const debouncedAddFormData = debounce(handleFormSubmit, 300);
+    useEffect(() => {
+      if(formData.email){
+        debouncedAddFormData();
+      }else{
+        setDuplicateError("Email already exists")
       }
-    } else if (isSubmitting) {
-      setIsSubmitting(false); // Reset flag if form is not valid
-    }
-
-  }, [formData]);
+    }, [formData,debouncedAddFormData]);
+  const handleUpdate = (email) => {
+    const rowData = data.find((item) => item.email === email);
+    navigate("/form", { state: { formData: rowData } });
+  };
   const handleDelete = (index) => {
     const newData = data.filter((_, i) => i !== index);
     setData(newData);
@@ -46,10 +47,21 @@ function FormTable() {
     <div className="container">
       <div className="row">
         <div className="col mt-5">
-          <h1 className="text-center">Submitted Data</h1>
-          <table className="table table-hover table-striped text-center">
-            <thead className="table-active">
+          <div className="d-flex justify-content-between header px-3 py-2">
+            <h1 className="text-center text-white">Manage Employees </h1>
+            <div className="pt-1">
+              <button className="btn btn-danger me-2">
+                <CiCircleMinus /> Delete
+              </button>
+              <button className="btn btn-success">
+                <CiCirclePlus /> Add Employee
+              </button>
+            </div>
+          </div>
+          <table className="table table-hover table-responsive text-center">
+            <thead className="">
               <tr>
+                <th><input type="checkbox" name="" id="" /></th>
                 <th>S.NO</th>
                 <th>Name</th>
                 <th>Phone Number</th>
@@ -58,21 +70,23 @@ function FormTable() {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody className="">
+            <tbody className="table-striped table-active">
               {data.length > 0 ? (
                 data.map((row, index) => (
                   <tr key={index}>
+                    <td><input type="checkbox" name="" id="" /></td>
                     <td>{index + 1}</td>
                     <td>{row.fullName}</td>
                     <td>{row.phoneNumber}</td>
                     <td>{row.email}</td>
                     <td>{row.password}</td>
                     <td>
-                      <FaUserEdit
+                      <MdModeEdit
+                        className="me-2"
                         onClick={() => handleUpdate(row.email)}
-                        style={{ color: "green", cursor: "pointer" }}
+                        style={{ color: "yellow", cursor: "pointer" }}
                       />
-                      <TiUserDelete
+                      <MdDelete
                         onClick={() => handleDelete(index)}
                         style={{ color: "red", cursor: "pointer" }}
                       />
@@ -81,12 +95,26 @@ function FormTable() {
                 ))
               ) : (
                 <tr className="">
-                  {" "}
                   <td colSpan={6}>No Data Submitted Not yet</td>
                 </tr>
               )}
             </tbody>
           </table>
+          <div className="d-flex justify-content-between px-3">
+            <div>
+              <p className="fs-5">Showing 5 out of 25 entries</p>
+            </div>
+            <div className="d-flex">
+              <p className="btn">Previous</p>
+              <p className="btn">1</p>
+              <p className="btn">2</p>
+              <p className="btn bg-primary">3</p>
+              <p className="btn">4</p>
+              <p className="btn">5</p>
+              <p className="btn">Next</p>
+            </div>
+          </div>
+          {duplicateError && <div className="error">{duplicateError}</div>}
         </div>
       </div>
     </div>

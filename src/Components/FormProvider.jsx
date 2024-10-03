@@ -13,13 +13,10 @@ const formReducer = (state, action) => {
         [action.field]: action.value,
       };
     case "RESET":
-      return {
-        fullName: "",
-        phoneNumber: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      };
+      return { ...state, formData : initialState.formData };
+    case "SUBMIT":
+      // Handling form submission here, if needed
+      return { ...state };
     default:
       return state;
   }
@@ -39,7 +36,7 @@ export function FormProvider({ children }) {
   const [formData, dispatch] = useReducer(formReducer, initialState);
 
   return (
-    <FormContext.Provider value={{ formData, dispatch }}>
+    <FormContext.Provider value={{ formData , dispatch }}>
       {children}
     </FormContext.Provider>
   );
