@@ -30,10 +30,7 @@ span{
   display: block !important;
   color: red;
 }
-.table-primary{
-  box-shadow: 10px 10px 10px #6A2C91;
-  overflow-x: auto;
-}
 .header{
   background-color: #435D7D;
+  --bs-table-bg: #435D7D
 }

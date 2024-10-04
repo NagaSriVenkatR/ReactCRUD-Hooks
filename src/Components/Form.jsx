@@ -112,16 +112,13 @@ function Form() {
     setErrors(newErrors);
     return valid;
   };
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
       console.log("Form submitted successfully", formData);
-      setIsSubmitting(true);
       navigate("/table");
-      dispatch({ type: "SUBMIT", payload: formData });
-      setIsSubmitting(false);
+      dispatch({ type: "SUBMIT", payload: formData }); 
     } else {
       console.log("Duplicate entry detected for email:", formData.email);
     }
@@ -257,7 +254,7 @@ function Form() {
                   />
                   <span>{errors.confirmPassword}</span>
                 </div>
-                <div className="d-flex">
+                <div className="d-flex mt-2">
                   <input className="form-check" type="checkbox" />
                   <label className="form-label" htmlFor="">
                     I agree terms of Service and Privacy Policy
@@ -267,9 +264,8 @@ function Form() {
                   <button
                     className="btn btn-primary register px-4 py-2"
                     type="submit"
-                    disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    Register
                   </button>
                   <button
                     className="btn btn-primary register px-4 py-2"

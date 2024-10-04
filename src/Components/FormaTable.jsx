@@ -3,7 +3,7 @@ import FormContext from "./FormProvider";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 import { MdDelete, MdModeEdit } from "react-icons/md";
-import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 
 function FormTable() {
   const { formData,dispatch } = useContext(FormContext); // Retrieve the form data
@@ -14,7 +14,6 @@ function FormTable() {
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
-  const [duplicateError, setDuplicateError] = useState("");
   const emailExists = (email) => data.some((item) => item.email === email);
   const handleFormSubmit = () => {
      if (isFormDataValid(formData)) {
@@ -22,7 +21,6 @@ function FormTable() {
        if (!emailExists(formData.email)) {
          setData((prevData) => [...prevData, formData]);
          dispatch({ type: "RESET" });
-         setDuplicateError("");
        } 
      }
   }
@@ -30,8 +28,6 @@ function FormTable() {
     useEffect(() => {
       if(formData.email){
         debouncedAddFormData();
-      }else{
-        setDuplicateError("Email already exists")
       }
     }, [formData,debouncedAddFormData]);
   const handleUpdate = (email) => {
@@ -42,26 +38,38 @@ function FormTable() {
     const newData = data.filter((_, i) => i !== index);
     setData(newData);
   };
-
   return (
     <div className="container">
       <div className="row">
-        <div className="col mt-5">
-          <div className="d-flex justify-content-between header px-3 py-2">
-            <h1 className="text-center text-white">Manage Employees </h1>
-            <div className="pt-1">
-              <button className="btn btn-danger me-2">
-                <CiCircleMinus /> Delete
-              </button>
-              <button className="btn btn-success">
-                <CiCirclePlus /> Add Employee
-              </button>
-            </div>
-          </div>
-          <table className="table table-hover table-responsive text-center">
+        <div className="col mt-5 table-responsive">
+          <table className="table table-hover text-center">
             <thead className="">
+              <tr className="header">
+                <th className="" colSpan={4}>
+                  <div className="d-flex">
+                    <h2 className="text-white ps-5">Manage</h2>
+                    <h2 className="text-white ps-1">
+                      <b>Employees</b>
+                    </h2>
+                  </div>
+                </th>
+                <th></th>
+                <th></th>
+                <th className="">
+                  <div className="pt-1 d-flex">
+                    <button className="btn btn-danger me-2">
+                      <FaMinusCircle /> Delete
+                    </button>
+                    <button className="btn btn-success">
+                      <FaPlusCircle /> Add Employee
+                    </button>
+                  </div>
+                </th>
+              </tr>
               <tr>
-                <th><input type="checkbox" name="" id="" /></th>
+                <th>
+                  <input type="checkbox" name="" id="" />
+                </th>
                 <th>S.NO</th>
                 <th>Name</th>
                 <th>Phone Number</th>
@@ -70,11 +78,13 @@ function FormTable() {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody className="table-striped table-active">
+            <tbody className="">
               {data.length > 0 ? (
                 data.map((row, index) => (
                   <tr key={index}>
-                    <td><input type="checkbox" name="" id="" /></td>
+                    <td>
+                      <input type="checkbox" name="" id="" />
+                    </td>
                     <td>{index + 1}</td>
                     <td>{row.fullName}</td>
                     <td>{row.phoneNumber}</td>
@@ -95,26 +105,31 @@ function FormTable() {
                 ))
               ) : (
                 <tr className="">
-                  <td colSpan={6}>No Data Submitted Not yet</td>
+                  <td colSpan={7}>No Data Submitted Not yet</td>
                 </tr>
               )}
             </tbody>
+            <tfoot>
+              <tr>
+                <td className="text-start" colSpan={4}>
+                  Showing 5 out of 25 entries
+                </td>
+                <td></td>
+                <td></td>
+                <td className="">
+                  <div className="d-flex ">
+                    <p className="btn">Previous</p>
+                    <p className="btn">1</p>
+                    <p className="btn">2</p>
+                    <p className="btn bg-primary">3</p>
+                    <p className="btn">4</p>
+                    <p className="btn">5</p>
+                    <p className="btn">Next</p>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
-          <div className="d-flex justify-content-between px-3">
-            <div>
-              <p className="fs-5">Showing 5 out of 25 entries</p>
-            </div>
-            <div className="d-flex">
-              <p className="btn">Previous</p>
-              <p className="btn">1</p>
-              <p className="btn">2</p>
-              <p className="btn bg-primary">3</p>
-              <p className="btn">4</p>
-              <p className="btn">5</p>
-              <p className="btn">Next</p>
-            </div>
-          </div>
-          {duplicateError && <div className="error">{duplicateError}</div>}
         </div>
       </div>
     </div>
