@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Form.css';
 import Tech from './image.png';
@@ -6,7 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook} from 'react-icons/fa';
 import { FaSquareXTwitter } from 'react-icons/fa6';
 import FormContext from './FormProvider';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 function Form() {
   const { formData, dispatch } = useContext(FormContext);
   const [errors, setErrors] = useState({
@@ -118,11 +118,44 @@ function Form() {
     if (validateForm()) {
       console.log("Form submitted successfully", formData);
       navigate("/table");
-      dispatch({ type: "SUBMIT", payload: formData }); 
+     
     } else {
       console.log("Duplicate entry detected for email:", formData.email);
     }
   }
+   const location = useLocation();
+   const initialFormData = location.state?.formData;
+
+   useEffect(() => {
+     // If initialFormData is present, populate the form with it
+     if (initialFormData) {
+       dispatch({
+         type: "UPDATE_FIELD",
+         field: "fullName",
+         value: initialFormData.fullName,
+       });
+       dispatch({
+         type: "UPDATE_FIELD",
+         field: "phoneNumber",
+         value: initialFormData.phoneNumber,
+       });
+       dispatch({
+         type: "UPDATE_FIELD",
+         field: "email",
+         value: initialFormData.email,
+       });
+       dispatch({
+         type: "UPDATE_FIELD",
+         field: "password",
+         value: initialFormData.password,
+       });
+       dispatch({
+         type: "UPDATE_FIELD",
+         field: "confirmPassword",
+         value: initialFormData.confirmPassword,
+       });
+     }
+   }, [initialFormData, dispatch]);
     const handleReset = () => {
       dispatch({ type: "RESET" });
       setErrors({
@@ -189,13 +222,13 @@ function Form() {
                     name="fullName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData.fullName}
+                    value={formData?.fullName||""}
                     ref={fullNameRef}
                   />
-                  <span>{errors.fullName}</span>
+                  <span className='mb-2'>{errors.fullName}</span>
                 </div>
                 <div className="">
-                  <label className="" htmlFor="">
+                  <label className="mt-3" htmlFor="">
                     Phone Number
                   </label>
                   <input
@@ -204,13 +237,13 @@ function Form() {
                     name="phoneNumber"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData.phoneNumber}
+                    value={formData?.phoneNumber||""}
                     ref={phoneNumberRef}
                   />
                   <span>{errors.phoneNumber}</span>
                 </div>
                 <div className="">
-                  <label className="" htmlFor="">
+                  <label className="mt-3" htmlFor="">
                     Email
                   </label>
                   <input
@@ -219,13 +252,13 @@ function Form() {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData.email}
+                    value={formData?.email||""}
                     ref={emailRef}
                   />
                   <span>{errors.email}</span>
                 </div>
                 <div className="">
-                  <label className="form-label" htmlFor="">
+                  <label className="form-label mt-3" htmlFor="">
                     Password
                   </label>
                   <input
@@ -234,13 +267,13 @@ function Form() {
                     name="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData.password}
+                    value={formData?.password||""}
                     ref={passwordRef}
                   />
                   <span>{errors.password}</span>
                 </div>
                 <div className="">
-                  <label className="form-label" htmlFor="">
+                  <label className="form-label mt-3" htmlFor="">
                     Confirm Password
                   </label>
                   <input
@@ -249,18 +282,18 @@ function Form() {
                     name="confirmPassword"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData.confirmPassword}
+                    value={formData?.confirmPassword||""}
                     ref={confirmPasswordRef}
                   />
                   <span>{errors.confirmPassword}</span>
                 </div>
-                <div className="d-flex mt-2">
+                <div className="d-flex mt-3">
                   <input className="form-check" type="checkbox" />
                   <label className="form-label" htmlFor="">
                     I agree terms of Service and Privacy Policy
                   </label>
                 </div>
-                <div className="mt-3 text-center d-flex justify-content-evenly">
+                <div className="mt-1 text-center d-flex justify-content-evenly">
                   <button
                     className="btn btn-primary register px-4 py-2"
                     type="submit"

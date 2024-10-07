@@ -10,6 +10,9 @@
   background-color: white !important;
   color: #902790 !important;
 }
+label{
+  font-weight: bold;
+}
 p{
   font-size: 12px;
 }
@@ -24,11 +27,10 @@ p{
   border-radius: 20px;
 }
 span{
-  font-size: 12px !important;
-  height: 14px !important;
-  /* position: absolute !important; */
-  display: block !important;
-  color: red;
+  font-size: 15px !important;
+  position: absolute !important;
+  color: rgb(253, 2, 2);
+  font-weight: 600;
 }
 .header{
   background-color: #435D7D;

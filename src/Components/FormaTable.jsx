@@ -6,31 +6,38 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 
 function FormTable() {
-  const { formData,dispatch } = useContext(FormContext); // Retrieve the form data
-  const [data, setData] = useState([]); // Store data in local state for CRUD operations
+  const { formData,dispatch,employees = [] } = useContext(FormContext); // Retrieve the form data
+  const [data, setData] = useState(employees); // Store data in local state for CRUD operations
   const navigate = useNavigate();
   const isFormDataValid = (data) => {
     return (
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
+   useEffect(() => {
+     setData(employees); 
+     console.log("Employees:", employees);
+     console.log("Data:", data);// Update local data whenever employees change
+   }, [employees,data]);
   const emailExists = (email) => data.some((item) => item.email === email);
   const handleFormSubmit = () => {
      if (isFormDataValid(formData)) {
       console.log(formData);
        if (!emailExists(formData.email)) {
          setData((prevData) => [...prevData, formData]);
-         dispatch({ type: "RESET" });
+         dispatch({ type: "ADD_EMPLOYEE", payload: formData });
+          dispatch({ type: "RESET" });
        } 
      }
   }
   const debouncedAddFormData = debounce(handleFormSubmit, 300);
     useEffect(() => {
-      if(formData.email){
+      if(formData.email && isFormDataValid(formData)){
         debouncedAddFormData();
       }
     }, [formData,debouncedAddFormData]);
-  const handleUpdate = (email) => {
+  const handleUpdate = (email,e) => {
+    e.preventDefault();
     const rowData = data.find((item) => item.email === email);
     navigate("/form", { state: { formData: rowData } });
   };
@@ -38,6 +45,11 @@ function FormTable() {
     const newData = data.filter((_, i) => i !== index);
     setData(newData);
   };
+  const handleAdd = (e) =>{
+    e.preventDefault();
+    dispatch({type:"RESET"})
+    navigate('/form');
+  }
   return (
     <div className="container">
       <div className="row">
@@ -60,7 +72,7 @@ function FormTable() {
                     <button className="btn btn-danger me-2">
                       <FaMinusCircle /> Delete
                     </button>
-                    <button className="btn btn-success">
+                    <button className="btn btn-success" onClick={handleAdd}>
                       <FaPlusCircle /> Add Employee
                     </button>
                   </div>
@@ -72,7 +84,7 @@ function FormTable() {
                 </th>
                 <th>S.NO</th>
                 <th>Name</th>
-                <th>Phone Number</th>
+                <th>PhoneNumber</th>
                 <th>Email</th>
                 <th>Password</th>
                 <th>Actions</th>
@@ -85,15 +97,15 @@ function FormTable() {
                     <td>
                       <input type="checkbox" name="" id="" />
                     </td>
-                    <td>{index + 1}</td>
-                    <td>{row.fullName}</td>
-                    <td>{row.phoneNumber}</td>
-                    <td>{row.email}</td>
-                    <td>{row.password}</td>
+                    <td>{index + 1 || ""}</td>
+                    <td>{row.fullName || " "}</td>
+                    <td>{row.phoneNumber || " "}</td>
+                    <td>{row.email || " "}</td>
+                    <td>{row.password || " "}</td>
                     <td>
                       <MdModeEdit
                         className="me-2"
-                        onClick={() => handleUpdate(row.email)}
+                        onClick={(e) => handleUpdate(row.email, e)}
                         style={{ color: "yellow", cursor: "pointer" }}
                       />
                       <MdDelete
@@ -111,12 +123,11 @@ function FormTable() {
             </tbody>
             <tfoot>
               <tr>
-                <td className="text-start" colSpan={4}>
-                  Showing 5 out of 25 entries
+                <td className="text-start" colSpan={5}>
+                  Showing {data.length} out of{" "}
+                  {employees ? employees.length : 0} entries
                 </td>
-                <td></td>
-                <td></td>
-                <td className="">
+                <td colSpan={4}>
                   <div className="d-flex ">
                     <p className="btn">Previous</p>
                     <p className="btn">1</p>
