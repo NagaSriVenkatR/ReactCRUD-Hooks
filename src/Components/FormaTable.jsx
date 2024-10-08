@@ -9,46 +9,41 @@ function FormTable() {
   const { formData,dispatch,employees = [] } = useContext(FormContext); // Retrieve the form data
   const [data, setData] = useState(employees); // Store data in local state for CRUD operations
   const navigate = useNavigate();
+    useEffect(() => {
+     setData(employees); 
+     console.log("Employees:", employees);
+   }, [employees]);
   const isFormDataValid = (data) => {
     return (
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
-   useEffect(() => {
-     setData(employees); 
-     console.log("Employees:", employees);
-     console.log("Data:", data);// Update local data whenever employees change
-   }, [employees,data]);
-  const emailExists = (email) => data.some((item) => item.email === email);
+const emailExists = (email) => data.some((item) => item.email === email);
+
+  const [duplicateError, setDuplicateError] = useState("");
   const handleFormSubmit = () => {
-     if (isFormDataValid(formData)) {
+    if (isFormDataValid(formData)) {
       console.log(formData);
-       if (!emailExists(formData.email)) {
-         setData((prevData) => [...prevData, formData]);
-         dispatch({ type: "ADD_EMPLOYEE", payload: formData });
-          dispatch({ type: "RESET" });
-       } 
-     }
-  }
+      if (!emailExists(formData.email)) {
+        setData((prevData) => [...prevData, formData]);
+        dispatch({ type: "RESET" });
+        setDuplicateError("");
+      }
+    }
+  };
   const debouncedAddFormData = debounce(handleFormSubmit, 300);
     useEffect(() => {
       if(formData.email && isFormDataValid(formData)){
         debouncedAddFormData();
       }
     }, [formData,debouncedAddFormData]);
-  const handleUpdate = (email,e) => {
-    e.preventDefault();
+  const handleUpdate = (email) => {
     const rowData = data.find((item) => item.email === email);
     navigate("/form", { state: { formData: rowData } });
   };
   const handleDelete = (index) => {
     const newData = data.filter((_, i) => i !== index);
     setData(newData);
-  };
-  const handleAdd = (e) =>{
-    e.preventDefault();
-    dispatch({type:"RESET"})
-    navigate('/form');
   }
   return (
     <div className="container">
@@ -72,7 +67,7 @@ function FormTable() {
                     <button className="btn btn-danger me-2">
                       <FaMinusCircle /> Delete
                     </button>
-                    <button className="btn btn-success" onClick={handleAdd}>
+                    <button className="btn btn-success">
                       <FaPlusCircle /> Add Employee
                     </button>
                   </div>
@@ -117,7 +112,7 @@ function FormTable() {
                 ))
               ) : (
                 <tr className="">
-                  <td colSpan={7}>No Data Submitted Not yet</td>
+                  <td colSpan={7}>{duplicateError}No Data Submitted Not yet</td>
                 </tr>
               )}
             </tbody>
@@ -125,7 +120,7 @@ function FormTable() {
               <tr>
                 <td className="text-start" colSpan={5}>
                   Showing {data.length} out of{" "}
-                  {employees ? employees.length : 0} entries
+                  { employees ? employees.length : 0} entries
                 </td>
                 <td colSpan={4}>
                   <div className="d-flex ">
