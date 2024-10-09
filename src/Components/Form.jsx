@@ -222,10 +222,10 @@ function Form() {
                     name="fullName"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData?.fullName||""}
+                    value={formData?.fullName || ""}
                     ref={fullNameRef}
                   />
-                  <span className='mb-2'>{errors.fullName}</span>
+                  <span className="mb-2">{errors.fullName}</span>
                 </div>
                 <div className="">
                   <label className="mt-3" htmlFor="">
@@ -237,7 +237,7 @@ function Form() {
                     name="phoneNumber"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData?.phoneNumber||""}
+                    value={formData?.phoneNumber || ""}
                     ref={phoneNumberRef}
                   />
                   <span>{errors.phoneNumber}</span>
@@ -252,7 +252,7 @@ function Form() {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData?.email||""}
+                    value={formData?.email || ""}
                     ref={emailRef}
                   />
                   <span>{errors.email}</span>
@@ -267,7 +267,7 @@ function Form() {
                     name="password"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData?.password||""}
+                    value={formData?.password || ""}
                     ref={passwordRef}
                   />
                   <span>{errors.password}</span>
@@ -282,16 +282,14 @@ function Form() {
                     name="confirmPassword"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={formData?.confirmPassword||""}
+                    value={formData?.confirmPassword || ""}
                     ref={confirmPasswordRef}
                   />
                   <span>{errors.confirmPassword}</span>
                 </div>
                 <div className="d-flex mt-3">
-                  <input className="form-check" type="checkbox" />
-                  <label className="form-label" htmlFor="">
-                    I agree terms of Service and Privacy Policy
-                  </label>
+                  <input className="form-check mt-1" type="checkbox" />
+                  <p className='mt-3 agree'> I agree terms of Service and Privacy Policy</p>
                 </div>
                 <div className="mt-1 text-center d-flex justify-content-evenly">
                   <button

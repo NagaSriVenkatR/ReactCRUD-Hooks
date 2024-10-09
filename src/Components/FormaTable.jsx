@@ -17,8 +17,6 @@ function FormTable() {
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
-// const emailExists = (email) => data.some((item) => item.email === email);
-
   const [duplicateError, setDuplicateError] = useState("");
   const handleFormSubmit = (event) => {
     event.preventDefault();

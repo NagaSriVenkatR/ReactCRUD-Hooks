@@ -1,5 +1,6 @@
 .parent{
   margin-top: 20px;
+  margin-bottom: 20px;
   background-image: linear-gradient(to bottom,#902790,#6A2C91) !important;
   border-radius: 15px;
 }
@@ -35,4 +36,8 @@ span{
 .header{
   background-color: #435D7D;
   --bs-table-bg: #435D7D
+}
+.agree{
+  font-size: 14px;
+  font-weight: bold;
 }
