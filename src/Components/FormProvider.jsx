@@ -1,6 +1,6 @@
 // FormProvider.js
 import React, { createContext, useReducer } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 // Create a context for form data
 const FormContext = createContext();
 class FormState {
@@ -49,12 +49,16 @@ const formReducer = (state, action) => {
       // Keep the employees intact
       return {
         ...state,
-        FormData: new FormState().formData,
+        formData: {...new FormState().formData},
       };
     case "ADD_EMPLOYEE":
+      if (state.employees.some((emp) => emp.email === action.payload.email)) {
+        return state; // Don't add if email already exists
+      }
+      const newEmployee = { ...action.payload, id: uuidv4() }; 
       return {
         ...state,
-        employees: [...state.employees, action.payload], // Add the new employee
+        employees: [...state.employees,newEmployee], // Add the new employee
         formData: new FormState().formData, // Reset form data after adding
       };
     case "SET_FORM_DATA":
@@ -63,8 +67,8 @@ const formReducer = (state, action) => {
         formData: action.payload, // Update form data with the selected row data
       };
     case "UPDATE_EMPLOYEE":
-      const updatedEmployees = state.employees.map((employee, index) =>
-        index === action.index ? action.payload : employee
+      const updatedEmployees = state.employees.map((employee) =>
+        employee.id === action.payload.id ? action.payload : employee
       );
       return {
         ...state,
@@ -72,7 +76,7 @@ const formReducer = (state, action) => {
       };
     case "DELETE_EMPLOYEE":
       const filteredEmployees = state.employees.filter(
-        (_, index) => index !== action.index
+        (employee) => employee.id !== action.id
       );
       return {
         ...state,

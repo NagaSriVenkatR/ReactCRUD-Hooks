@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import FormContext from "./FormProvider";
+import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
-import { debounce } from "lodash";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
-
 function FormTable() {
   const { formData,dispatch,employees = [] } = useContext(FormContext); // Retrieve the form data
   const [data, setData] = useState(employees); // Store data in local state for CRUD operations
@@ -18,32 +17,44 @@ function FormTable() {
       data && data.fullName && data.phoneNumber && data.email && data.password
     );
   };
-const emailExists = (email) => data.some((item) => item.email === email);
+// const emailExists = (email) => data.some((item) => item.email === email);
 
   const [duplicateError, setDuplicateError] = useState("");
-  const handleFormSubmit = () => {
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
     if (isFormDataValid(formData)) {
       console.log(formData);
-      if (!emailExists(formData.email)) {
-        setData((prevData) => [...prevData, formData]);
-        dispatch({ type: "RESET" });
-        setDuplicateError("");
-      }
+         if (formData.id) {
+           // If the employee exists, update their information
+           dispatch({ type: "UPDATE_EMPLOYEE", payload: formData });
+           console.log("Update Employee",formData)
+         } else {
+           // If it's a new employee, add the ID and add them to the list
+           const newEmployee = { ...formData, id: uuidv4() };
+           dispatch({ type: "ADD_EMPLOYEE", payload: newEmployee });
+           console.log("New Employee",newEmployee);
+         }
+    dispatch({ type: "RESET" });
+    setDuplicateError("");
     }
   };
-  const debouncedAddFormData = debounce(handleFormSubmit, 300);
-    useEffect(() => {
-      if(formData.email && isFormDataValid(formData)){
-        debouncedAddFormData();
-      }
-    }, [formData,debouncedAddFormData]);
-  const handleUpdate = (email) => {
-    const rowData = data.find((item) => item.email === email);
+  useEffect(() => {
+    if (formData.email && isFormDataValid(formData)) {
+      handleFormSubmit({ preventDefault: () => {} }); // Mocking preventDefault
+    }
+  }, [formData]);
+  const handleUpdate = (id) => {
+    const rowData = data.find((item) => item.id === id);
+    dispatch({ type: "SET_FORM_DATA", payload: rowData });
     navigate("/form", { state: { formData: rowData } });
   };
-  const handleDelete = (index) => {
-    const newData = data.filter((_, i) => i !== index);
-    setData(newData);
+  const handleDelete = (id) => {
+    dispatch({type:"DELETE_EMPLOYEE",id})
+  }
+  const handleAdd = (e) => {
+    e.preventDefault();
+    dispatch({type:"RESET"});
+    navigate("/form");
   }
   return (
     <div className="container">
@@ -60,14 +71,13 @@ const emailExists = (email) => data.some((item) => item.email === email);
                     </h2>
                   </div>
                 </th>
-                <th></th>
-                <th></th>
-                <th className="">
+                <th ></th>
+                <th className="" colSpan={2}>
                   <div className="pt-1 d-flex">
                     <button className="btn btn-danger me-2">
                       <FaMinusCircle /> Delete
                     </button>
-                    <button className="btn btn-success">
+                    <button className="btn btn-success" onClick={handleAdd}>
                       <FaPlusCircle /> Add Employee
                     </button>
                   </div>
@@ -100,11 +110,11 @@ const emailExists = (email) => data.some((item) => item.email === email);
                     <td>
                       <MdModeEdit
                         className="me-2"
-                        onClick={(e) => handleUpdate(row.email, e)}
+                        onClick={() => handleUpdate(row.id)}
                         style={{ color: "yellow", cursor: "pointer" }}
                       />
                       <MdDelete
-                        onClick={() => handleDelete(index)}
+                        onClick={() => handleDelete(row.id)}
                         style={{ color: "red", cursor: "pointer" }}
                       />
                     </td>
